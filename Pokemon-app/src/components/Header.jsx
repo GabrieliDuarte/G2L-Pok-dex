@@ -8,13 +8,19 @@ function Header() {
 
   useEffect(() => {
     async function carregarPokemon() {
-      const data = await fetch("https://pokeapi.co/api/v2/pokemon?limit=100000");
+      const data = await fetch("https://pokeapi.co/api/v2/pokemon?limit=10000");
       const res = await data.json();
 
-      const listaComImagem = res.results.map((p, index) => ({
-        name: p.name,
-        img: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${index + 1}.png`
-      }));
+      const listaComImagem = res.results
+        .map((p) => {
+          const id = p.url.split("/")[6];
+
+          return {
+            name: p.name,
+            img: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`,
+          };
+        })
+        .sort((a, b) => a.name.localeCompare(b.name));
 
       setListaPokemon(listaComImagem);
     }
@@ -31,15 +37,15 @@ function Header() {
       return;
     }
 
-    const filtrados = listaPokemon.filter((p) =>
-      p.name.startsWith(valor)
-    );
+    const filtrados = listaPokemon.filter((p) => p.name.includes(valor));
 
-    setSugestoes(filtrados.slice(0, 5));
+    setSugestoes(filtrados);
   }
 
   async function selecionarPokemon(nomePokemon) {
-    const data = await fetch(`https://pokeapi.co/api/v2/pokemon/${nomePokemon}`);
+    const data = await fetch(
+      `https://pokeapi.co/api/v2/pokemon/${nomePokemon}`,
+    );
     const res = await data.json();
 
     setPokemon(res);
@@ -55,7 +61,6 @@ function Header() {
 
   return (
     <div className="Cabecalho">
-
       <h1>Pokédex</h1>
 
       <input
@@ -65,7 +70,16 @@ function Header() {
         onChange={handleChange}
         onKeyDown={handleKeyDown}
       />
-      <ul style={{ listStyle: "none", padding: 0 }}>
+      <ul
+        style={{
+          listStyle: "none",
+          padding: 0,
+          maxHeight: "300px",
+          overflowY: "scroll",
+          border: "1px solid #ccc",
+          width: "250px",
+        }}
+      >
         {sugestoes.map((p) => (
           <li
             key={p.name}
@@ -75,7 +89,7 @@ function Header() {
               alignItems: "center",
               gap: "10px",
               cursor: "pointer",
-              padding: "5px"
+              padding: "5px",
             }}
           >
             <img src={p.img} alt={p.name} width="40" />
@@ -95,7 +109,6 @@ function Header() {
           />
         </div>
       )}
-
     </div>
   );
 }
