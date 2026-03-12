@@ -8,7 +8,7 @@ function Header() {
 
   useEffect(() => {
     async function carregarPokemon() {
-      const data = await fetch("https://pokeapi.co/api/v2/pokemon?limit=10000");
+      const data = await fetch("https://pokeapi.co/api/v2/pokemon?limit=2000");
       const res = await data.json();
 
       const listaComImagem = res.results
@@ -37,7 +37,7 @@ function Header() {
       return;
     }
 
-    const filtrados = listaPokemon.filter((p) => p.name.includes(valor));
+    const filtrados = listaPokemon.filter((p) => p.name.startsWith(valor));
 
     setSugestoes(filtrados);
   }
@@ -60,10 +60,13 @@ function Header() {
   }
 
   return (
+      <>
     <div className="Cabecalho">
-      <h1>Pokédex</h1>
+      <img src="/icones/Poké_Ball_icon.svg" alt="" height={50} />
+      <h1>Pokédex G2L</h1>
+      <img src="/icones/mingcute--user-4-fill.svg" alt="" />
 
-      <input
+      <input className="input-pesquisa"
         type="text"
         placeholder="Pesquisar Pokémon"
         value={nome}
@@ -103,13 +106,14 @@ function Header() {
           <h2>{pokemon.name}</h2>
 
           <img
-            src={pokemon.sprites.other["official-artwork"].front_default}
+            src={pokemon.sprites.other["showdown"].front_default}
             alt={pokemon.name}
             width="200"
           />
         </div>
       )}
     </div>
+  </>
   );
 }
 
