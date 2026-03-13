@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-function Header() {
+function Header({time, setTime}) {
   const [nome, setNome] = useState("");
   const [listaPokemon, setListaPokemon] = useState([]);
   const [sugestoes, setSugestoes] = useState([]);
@@ -8,7 +8,7 @@ function Header() {
 
   useEffect(() => {
     async function carregarPokemon() {
-      const data = await fetch("https://pokeapi.co/api/v2/pokemon?limit=10000");
+      const data = await fetch("https://pokeapi.co/api/v2/pokemon?limit=2000");
       const res = await data.json();
 
       const listaComImagem = res.results
@@ -37,7 +37,7 @@ function Header() {
       return;
     }
 
-    const filtrados = listaPokemon.filter((p) => p.name.includes(valor));
+    const filtrados = listaPokemon.filter((p) => p.name.startsWith(valor));
 
     setSugestoes(filtrados);
   }
@@ -46,8 +46,14 @@ function Header() {
     const data = await fetch(
       `https://pokeapi.co/api/v2/pokemon/${nomePokemon}`,
     );
+    
     const res = await data.json();
-
+    if (time.length >= 5) {
+      alert("Seu time já tem 5 Pokémon");
+      return;
+    }
+    
+    setTime([...time, res]);
     setPokemon(res);
     setNome(res.name);
     setSugestoes([]);
@@ -60,10 +66,12 @@ function Header() {
   }
 
   return (
+      <>
     <div className="Cabecalho">
-      <h1>Pokédex</h1>
+      <img src="/icones/Poké_Ball_icon.svg" alt="" height={50} />
+      <h1>Pokédex G2L</h1>
 
-      <input
+      <input className="input-pesquisa"
         type="text"
         placeholder="Pesquisar Pokémon"
         value={nome}
@@ -82,34 +90,36 @@ function Header() {
       >
         {sugestoes.map((p) => (
           <li
-            key={p.name}
-            onClick={() => selecionarPokemon(p.name)}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-              cursor: "pointer",
-              padding: "5px",
-            }}
+          key={p.name}
+          onClick={() => selecionarPokemon(p.name)}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+            cursor: "pointer",
+            padding: "5px",
+          }}
           >
             <img src={p.img} alt={p.name} width="40" />
             {p.name}
           </li>
         ))}
       </ul>
+      <img src="/icones/mingcute--user-4-fill.svg" alt="" />
 
       {pokemon && (
         <div>
           <h2>{pokemon.name}</h2>
 
           <img
-            src={pokemon.sprites.other["official-artwork"].front_default}
+            src={pokemon.sprites.other["showdown"].front_default}
             alt={pokemon.name}
             width="200"
           />
         </div>
       )}
     </div>
+  </>
   );
 }
 
