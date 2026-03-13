@@ -64,7 +64,6 @@ function Header() {
     <div className="Cabecalho">
       <img src="/icones/Poké_Ball_icon.svg" alt="" height={50} />
       <h1>Pokédex G2L</h1>
-      <img src="/icones/mingcute--user-4-fill.svg" alt="" />
 
       <input className="input-pesquisa"
         type="text"
@@ -85,21 +84,22 @@ function Header() {
       >
         {sugestoes.map((p) => (
           <li
-            key={p.name}
-            onClick={() => selecionarPokemon(p.name)}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-              cursor: "pointer",
-              padding: "5px",
-            }}
+          key={p.name}
+          onClick={() => selecionarPokemon(p.name)}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+            cursor: "pointer",
+            padding: "5px",
+          }}
           >
             <img src={p.img} alt={p.name} width="40" />
             {p.name}
           </li>
         ))}
       </ul>
+      <img src="/icones/mingcute--user-4-fill.svg" alt="" />
 
       {pokemon && (
         <div>
