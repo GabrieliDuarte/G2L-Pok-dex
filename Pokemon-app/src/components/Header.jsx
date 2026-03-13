@@ -77,6 +77,7 @@ function Header({time, setTime}) {
         value={nome}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
+        max={30}
       />
       <ul
         style={{
@@ -105,7 +106,7 @@ function Header({time, setTime}) {
           </li>
         ))}
       </ul>
-      <img src="/icones/mingcute--user-4-fill.svg" alt="" />
+      <img src="/icones/mingcute--user-4-fill.svg" alt="" style={{backgroundColor: 'black'}}/>
 
       {pokemon && (
         <div>

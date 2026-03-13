@@ -9,14 +9,9 @@ function App() {
   return (
     <>
       <div>
-<<<<<<< HEAD
         <Header time={time} setTime={setTime}/>
         <Equipes time={time}/>
-=======
-        <Header />
-        <Equipes />
-        <Pokemons />
->>>>>>> d10bd78ac9ae0f1562befe439c4452a84f5a55dd
+        <Pokemons time={time} setTime={setTime}/>
       </div>
     </>
   )

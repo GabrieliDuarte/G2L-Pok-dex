@@ -3,8 +3,7 @@ import { useState, useEffect } from "react";
 const TOTAL_POKEMONS = 1025;
 const limite = 27;
 
-export default function Pokedex() {
-
+export default function Pokedex({ time, setTime }) {
   const [paginaAtual, setPaginaAtual] = useState(1);
   const [pokemons, setPokemons] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -53,9 +52,23 @@ export default function Pokedex() {
     setPaginaAtual((p) => (p >= totalPaginas ? 1 : p + 1));
   }
 
+  async function selecionarPokemon(nomePokemon) {
+    const data = await fetch(
+      `https://pokeapi.co/api/v2/pokemon/${nomePokemon}`
+    );
+
+    const res = await data.json();
+
+    if (time.length >= 5) {
+      alert("Seu time já tem 5 Pokémon");
+      return;
+    }
+
+    setTime([...time, res]);
+  }
+
   return (
     <div>
-
       {loading && <p>Carregando...</p>}
 
       <div className="pokemon-container">
@@ -66,6 +79,7 @@ export default function Pokedex() {
             className="poke-icon"
             alt={pokemon.name}
             height={150}
+            onClick={() => selecionarPokemon(pokemon.name)}
           />
         ))}
       </div>
@@ -75,7 +89,6 @@ export default function Pokedex() {
       <span> Página {paginaAtual} </span>
 
       <button onClick={proximaPagina}>Próxima</button>
-
     </div>
   );
 }
