@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-function Header({time, setTime}) {
+function Header({ time, setTime }) {
   const [nome, setNome] = useState("");
   const [listaPokemon, setListaPokemon] = useState([]);
   const [sugestoes, setSugestoes] = useState([]);
@@ -46,13 +46,13 @@ function Header({time, setTime}) {
     const data = await fetch(
       `https://pokeapi.co/api/v2/pokemon/${nomePokemon}`,
     );
-    
+
     const res = await data.json();
     if (time.length >= 5) {
       alert("Seu time já tem 5 Pokémon");
       return;
     }
-    
+
     setTime([...time, res]);
     setPokemon(res);
     setNome(res.name);
@@ -66,49 +66,54 @@ function Header({time, setTime}) {
   }
 
   return (
-      <>
-    <div className="Cabecalho">
-      <img src="/icones/Poké_Ball_icon.svg" alt="" height={50} />
-      <h1>Pokédex G2L</h1>
-
-      <input className="input-pesquisa"
-        type="text"
-        placeholder="Pesquisar Pokémon"
-        value={nome}
-        onChange={handleChange}
-        onKeyDown={handleKeyDown}
-        max={30}
-      />
-      <ul
-        style={{
-          listStyle: "none",
-          padding: 0,
-          maxHeight: "300px",
-          overflowY: "scroll",
-          border: "1px solid #ccc",
-          width: "250px",
-        }}
-      >
-        {sugestoes.map((p) => (
-          <li
-          key={p.name}
-          onClick={() => selecionarPokemon(p.name)}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-            cursor: "pointer",
-            padding: "5px",
-          }}
+    <>
+      <div className="header">
+        <div className="logo">
+          <img src="/icones/Poké_Ball_icon.svg" alt="" height={50} />
+          <h1>Pokédex G2L</h1>
+        </div>
+        <div className="search">
+          <input
+            className="input-pesquisa"
+            type="text"
+            placeholder="Pesquisar Pokémon"
+            value={nome}
+            onChange={handleChange}
+            onKeyDown={handleKeyDown}
+            max={30}
+          />
+          {sugestoes.length > 0 && (
+          <ul className="search-container"
           >
-            <img src={p.img} alt={p.name} width="40" />
-            {p.name}
-          </li>
-        ))}
-      </ul>
-      <img src="/icones/mingcute--user-4-fill.svg" alt="" style={{backgroundColor: 'black'}}/>
+            {sugestoes.map((p) => (
+              <li className="search-results"
+                key={p.name}
+                onClick={() => selecionarPokemon(p.name)}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                  cursor: "pointer",
+                  padding: "5px",
+                }}
+              >
+                <img src={p.img} alt={p.name} width="40" />
+                {p.name}
+              </li>
+            ))}
+          </ul>
+          )}
+        </div>
 
-      {pokemon && (
+        <div className="menu">
+        <button>MEUS TIMES</button>
+        <img
+          src="/icones/mingcute--user-4-fill.svg"
+          alt=""
+          style={{ backgroundColor: "black" }}
+        />
+        </div>
+        {/* {pokemon && (
         <div>
           <h2>{pokemon.name}</h2>
 
@@ -118,9 +123,9 @@ function Header({time, setTime}) {
             width="200"
           />
         </div>
-      )}
-    </div>
-  </>
+      )} */}
+      </div>
+    </>
   );
 }
 

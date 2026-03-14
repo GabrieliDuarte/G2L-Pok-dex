@@ -4,9 +4,30 @@ const TOTAL_POKEMONS = 1025;
 const limite = 27;
 
 export default function Pokedex({ time, setTime }) {
+  const tiposPokemon = [
+    "bug",
+    "grass",
+    "fairy",
+    "normal",
+    "dragon",
+    "psychic",
+    "ghost",
+    "ground",
+    "steel",
+    "fire",
+    "flying",
+    "ice",
+    "electric",
+    "rock",
+    "dark",
+    "water",
+    "fighting",
+    "poison",
+  ];
   const [paginaAtual, setPaginaAtual] = useState(1);
   const [pokemons, setPokemons] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [tipo, setTipo] = useState("");
 
   const totalPaginas = Math.ceil(TOTAL_POKEMONS / limite);
 
@@ -16,7 +37,7 @@ export default function Pokedex({ time, setTime }) {
   }
 
   async function loadPokemonPage(page) {
-    if (loading) return;
+    if (loading || tipo !== "") return;
 
     setLoading(true);
 
@@ -40,6 +61,33 @@ export default function Pokedex({ time, setTime }) {
     setLoading(false);
   }
 
+  async function filtrarPorTipo(tipoSelecionado) {
+    setTipo(tipoSelecionado);
+
+    if (tipoSelecionado === "") {
+      loadPokemonPage(paginaAtual);
+      return;
+    }
+
+    setLoading(true);
+
+    const res = await fetch(
+      `https://pokeapi.co/api/v2/type/${tipoSelecionado}`,
+    );
+    const data = await res.json();
+
+    const lista = data.pokemon;
+
+    const promises = lista.map((p) =>
+      fetch(p.pokemon.url).then((r) => r.json()),
+    );
+
+    const results = await Promise.all(promises);
+
+    setPokemons(results);
+    setLoading(false);
+  }
+
   useEffect(() => {
     loadPokemonPage(paginaAtual);
   }, [paginaAtual]);
@@ -54,7 +102,7 @@ export default function Pokedex({ time, setTime }) {
 
   async function selecionarPokemon(nomePokemon) {
     const data = await fetch(
-      `https://pokeapi.co/api/v2/pokemon/${nomePokemon}`
+      `https://pokeapi.co/api/v2/pokemon/${nomePokemon}`,
     );
 
     const res = await data.json();
@@ -69,6 +117,17 @@ export default function Pokedex({ time, setTime }) {
 
   return (
     <div>
+      <div className="tipos-container">
+        {tiposPokemon.map((tipo) => (
+          <img
+            key={tipo}
+            src={`https://raw.githubusercontent.com/partywhale/pokemon-type-icons/master/icons/${tipo}.svg`}
+            className="tipo-icon"
+            onClick={() => filtrarPorTipo(tipo)}
+          />
+        ))}
+      </div>
+
       {loading && <p>Carregando...</p>}
 
       <div className="pokemon-container">
@@ -84,11 +143,13 @@ export default function Pokedex({ time, setTime }) {
         ))}
       </div>
 
-      <button onClick={paginaAnterior}>Anterior</button>
-
-      <span> Página {paginaAtual} </span>
-
-      <button onClick={proximaPagina}>Próxima</button>
+      {tipo === "" && (
+        <>
+          <button onClick={paginaAnterior}>Anterior</button>
+          <span> Página {paginaAtual} </span>
+          <button onClick={proximaPagina}>Próxima</button>
+        </>
+      )}
     </div>
   );
 }
