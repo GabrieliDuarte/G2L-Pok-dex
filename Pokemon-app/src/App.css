@@ -53,14 +53,20 @@
 }
 
 .tipo-icon {
-  width: 60px;
   height: 60px;
+  width: 60px;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: 0.2s;
 }
 
 .tipo-icon:hover {
-  transform: scale(1.15);
+  opacity: 1;
+  transform: scale(1.2)
+}
+
+.tipo-icon.ativo {
+  opacity: 1;
+  transform: scale(1.2);
 }
 
 .search {

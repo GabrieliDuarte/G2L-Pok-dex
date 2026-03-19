@@ -37,7 +37,7 @@ export default function Pokedex({ time, setTime }) {
   }
 
   async function loadPokemonPage(page) {
-    if (loading || tipo !== "") return;
+    if (loading ) return;
 
     setLoading(true);
 
@@ -62,18 +62,19 @@ export default function Pokedex({ time, setTime }) {
   }
 
   async function filtrarPorTipo(tipoSelecionado) {
-    setTipo(tipoSelecionado);
-
-    if (tipoSelecionado === "") {
+    if (tipo === tipoSelecionado) {
+      setTipo("");
       loadPokemonPage(paginaAtual);
       return;
     }
 
+    setTipo(tipoSelecionado);
     setLoading(true);
 
     const res = await fetch(
       `https://pokeapi.co/api/v2/type/${tipoSelecionado}`,
     );
+
     const data = await res.json();
 
     const lista = data.pokemon;
@@ -90,7 +91,7 @@ export default function Pokedex({ time, setTime }) {
 
   useEffect(() => {
     loadPokemonPage(paginaAtual);
-  }, [paginaAtual]);
+  }, [paginaAtual, tipo]);
 
   function paginaAnterior() {
     setPaginaAtual((p) => (p <= 1 ? totalPaginas : p - 1));
@@ -118,12 +119,12 @@ export default function Pokedex({ time, setTime }) {
   return (
     <div>
       <div className="tipos-container">
-        {tiposPokemon.map((tipo) => (
+        {tiposPokemon.map((tipoPokemon) => (
           <img
-            key={tipo}
-            src={`https://raw.githubusercontent.com/partywhale/pokemon-type-icons/master/icons/${tipo}.svg`}
-            className="tipo-icon"
-            onClick={() => filtrarPorTipo(tipo)}
+            key={tipoPokemon}
+            src={`https://raw.githubusercontent.com/partywhale/pokemon-type-icons/master/icons/${tipoPokemon}.svg`}
+            className={`tipo-icon ${tipo === tipoPokemon ? "ativo" : ""}`}
+            onClick={() => filtrarPorTipo(tipoPokemon)}
           />
         ))}
       </div>

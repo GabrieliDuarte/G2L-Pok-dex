@@ -83,35 +83,31 @@ function Header({ time, setTime }) {
             max={30}
           />
           {sugestoes.length > 0 && (
-          <ul className="search-container"
-          >
-            {sugestoes.map((p) => (
-              <li className="search-results"
-                key={p.name}
-                onClick={() => selecionarPokemon(p.name)}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "10px",
-                  cursor: "pointer",
-                  padding: "5px",
-                }}
-              >
-                <img src={p.img} alt={p.name} width="40" />
-                {p.name}
-              </li>
-            ))}
-          </ul>
+            <ul className="search-container">
+              {sugestoes.map((p) => (
+                <li
+                  className="search-results"
+                  key={p.name}
+                  onClick={() => selecionarPokemon(p.name)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                    cursor: "pointer",
+                    padding: "5px",
+                  }}
+                >
+                  <img src={p.img} alt={p.name} width="40" />
+                  {p.name}
+                </li>
+              ))}
+            </ul>
           )}
         </div>
 
         <div className="menu">
-        <button>MEUS TIMES</button>
-        <img
-          src="/icones/mingcute--user-4-fill.svg"
-          alt=""
-          style={{ backgroundColor: "black" }}
-        />
+          <button>MEUS TIMES</button>
+          <img src="/icones/mingcute--user-4-fill.svg" alt="" />
         </div>
         {/* {pokemon && (
         <div>
