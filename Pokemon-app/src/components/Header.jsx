@@ -37,7 +37,7 @@ function Header({ time, setTime }) {
       return;
     }
 
-    const filtrados = listaPokemon.filter((p) => p.name.startsWith(valor));
+    const filtrados = listaPokemon.filter((p) => p.name.includes(valor));
 
     setSugestoes(filtrados);
   }
@@ -109,7 +109,7 @@ function Header({ time, setTime }) {
           <button>MEUS TIMES</button>
           <img src="/icones/mingcute--user-4-fill.svg" alt="" />
         </div>
-        {/* {pokemon && (
+        {pokemon && (
         <div>
           <h2>{pokemon.name}</h2>
 
@@ -119,7 +119,7 @@ function Header({ time, setTime }) {
             width="200"
           />
         </div>
-      )} */}
+      )}
       </div>
     </>
   );

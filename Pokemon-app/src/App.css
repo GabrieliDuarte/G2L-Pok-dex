@@ -1,3 +1,7 @@
+*{
+  font-family: Arial, Helvetica, sans-serif;
+}
+
 /* Isso é só o cabeçalho */
 .header {
   display: flex;
@@ -89,4 +93,15 @@
 
 .search-results:hover {
   background: rgba(255, 255, 255, 0.2);
+}
+
+.pokemon-container {
+  text-transform: capitalize;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap; /* faz quebrar linha */
+}
+
+.pokemon {
+  margin: 1em;
 }

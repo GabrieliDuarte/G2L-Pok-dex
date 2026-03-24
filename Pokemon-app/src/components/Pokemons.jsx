@@ -37,7 +37,7 @@ export default function Pokedex({ time, setTime }) {
   }
 
   async function loadPokemonPage(page) {
-    if (loading ) return;
+    if (loading) return;
 
     setLoading(true);
 
@@ -133,14 +133,17 @@ export default function Pokedex({ time, setTime }) {
 
       <div className="pokemon-container">
         {pokemons.map((pokemon) => (
-          <img
-            key={pokemon.id}
-            src={pokemon.sprites.other["official-artwork"].front_default}
-            className="poke-icon"
-            alt={pokemon.name}
-            height={150}
-            onClick={() => selecionarPokemon(pokemon.name)}
-          />
+          <div key={pokemon.id} className="pokemon">
+            <img
+              src={pokemon.sprites.other["official-artwork"].front_default}
+              className="poke-icon"
+              alt={pokemon.name}
+              height={100}
+              width={100}
+              onClick={() => selecionarPokemon(pokemon.name)}
+            />
+            <h1>{pokemon.name}</h1>
+          </div>
         ))}
       </div>
 
