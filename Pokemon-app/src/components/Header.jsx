@@ -107,7 +107,7 @@ function Header({ time, setTime }) {
 
         <div className="menu">
           <button>MEUS TIMES</button>
-          <img src="/icones/mingcute--user-4-fill.svg" alt="" />
+          <img src="/icones/mingcute--user-4-fill.svg" alt=""/>
         </div>
         {pokemon && (
         <div>
