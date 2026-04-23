@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import api from "../services/api"
 
 const TOTAL_POKEMONS = 1025;
 const limite = 27;
@@ -32,8 +33,8 @@ export default function Pokedex({ time, setTime }) {
   const totalPaginas = Math.ceil(TOTAL_POKEMONS / limite);
 
   async function getPokemon(id) {
-    const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
-    return res.json();
+    const res = await api.get(`/pokemon/${id}`);
+    return res.data;
   }
 
   async function loadPokemonPage(page) {
@@ -71,13 +72,9 @@ export default function Pokedex({ time, setTime }) {
     setTipo(tipoSelecionado);
     setLoading(true);
 
-    const res = await fetch(
-      `https://pokeapi.co/api/v2/type/${tipoSelecionado}`,
-    );
+    const res = await api.get(`/type/${tipoSelecionado}`);
 
-    const data = await res.json();
-
-    const lista = data.pokemon;
+    const lista = res.data.pokemon;
 
     const promises = lista.map((p) =>
       fetch(p.pokemon.url).then((r) => r.json()),
@@ -102,18 +99,15 @@ export default function Pokedex({ time, setTime }) {
   }
 
   async function selecionarPokemon(nomePokemon) {
-    const data = await fetch(
-      `https://pokeapi.co/api/v2/pokemon/${nomePokemon}`,
-    );
 
-    const res = await data.json();
+    const res = await api.get(`/pokemon/${nomePokemon}`);
 
     if (time.length >= 5) {
       alert("Seu time já tem 5 Pokémon");
       return;
     }
 
-    setTime([...time, res]);
+    setTime([...time, res.data]);
   }
 
   return (

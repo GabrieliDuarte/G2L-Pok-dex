@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from "react";
+import api from "../services/api"
 
 function Header({ time, setTime }) {
   const [nome, setNome] = useState("");
   const [listaPokemon, setListaPokemon] = useState([]);
   const [sugestoes, setSugestoes] = useState([]);
   const [pokemon, setPokemon] = useState(null);
+  
+  
 
   useEffect(() => {
     async function carregarPokemon() {
-      const data = await fetch("https://pokeapi.co/api/v2/pokemon?limit=2000");
-      const res = await data.json();
+      const res = await api.get("/pokemon?limit=2000")
 
-      const listaComImagem = res.results
+      const listaComImagem = res.data.results
         .map((p) => {
           const id = p.url.split("/")[6];
 
@@ -43,19 +45,16 @@ function Header({ time, setTime }) {
   }
 
   async function selecionarPokemon(nomePokemon) {
-    const data = await fetch(
-      `https://pokeapi.co/api/v2/pokemon/${nomePokemon}`,
-    );
 
-    const res = await data.json();
+    const res = await api.get(`/pokemon/${nomePokemon}`)
     if (time.length >= 5) {
       alert("Seu time já tem 5 Pokémon");
       return;
     }
 
-    setTime([...time, res]);
-    setPokemon(res);
-    setNome(res.name);
+    setTime([...time, res.data]);
+    setPokemon(res.data);
+    setNome(res.data.name);
     setSugestoes([]);
   }
 
@@ -106,20 +105,20 @@ function Header({ time, setTime }) {
         </div>
 
         <div className="menu">
-          <button>MEUS TIMES</button>
-          <img src="/icones/mingcute--user-4-fill.svg" alt=""/>
+          <button >MEUS TIMES</button>
+          <img src="/icones/mingcute--user-4-fill.svg" alt="" />
         </div>
         {pokemon && (
-        <div>
-          <h2>{pokemon.name}</h2>
+          <div>
+            <h2>{pokemon.name}</h2>
 
-          <img
-            src={pokemon.sprites.other["showdown"].front_default}
-            alt={pokemon.name}
-            width="200"
-          />
-        </div>
-      )}
+            <img
+              src={pokemon.sprites.other["showdown"].front_default}
+              alt={pokemon.name}
+              width="200"
+            />
+          </div>
+        )}
       </div>
     </>
   );
