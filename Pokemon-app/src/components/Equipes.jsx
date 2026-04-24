@@ -6,7 +6,7 @@ function Equipes({ time }) {
       <div className="timePrincipal">
         {time.map((p, index) => (
           <div key={index}>
-            <img src={p.sprites.front_default} width="60" />
+            <img src={p.sprites.other.showdown.front_default} width="60" />
             <p>{p.name}</p>
           </div>
         ))}
