@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from "react";
 import api from "../services/api"
+import { useNavigate } from "react-router-dom";
 
 function Header({ time, setTime }) {
   const [nome, setNome] = useState("");
   const [listaPokemon, setListaPokemon] = useState([]);
   const [sugestoes, setSugestoes] = useState([]);
   const [pokemon, setPokemon] = useState(null);
-  
-  
+
+  const navigate = useNavigate()
+
+
 
   useEffect(() => {
     async function carregarPokemon() {
@@ -63,11 +66,22 @@ function Header({ time, setTime }) {
       selecionarPokemon(sugestoes[0].name);
     }
   }
+  function linkCad() {
+    navigate("/cadastro")
+  }
+
+  function linkHome() {
+    navigate("/")
+  }
+
+  function linkDash() {
+    navigate("/dashboard")
+  }
 
   return (
     <>
       <div className="header">
-        <div className="logo">
+        <div className="logo" onClick={linkHome}>
           <img src="/icones/Poké_Ball_icon.svg" alt="" height={50} />
           <h1>Pokédex G2L</h1>
         </div>
@@ -105,8 +119,8 @@ function Header({ time, setTime }) {
         </div>
 
         <div className="menu">
-          <button >MEUS TIMES</button>
-          <img src="/icones/mingcute--user-4-fill.svg" alt="" />
+          <button onClick={linkDash}>MEUS TIMES</button>
+          <img src="/icones/mingcute--user-4-fill.svg" alt="" onClick={linkCad} />
         </div>
         {/* {pokemon && (
           <div>
