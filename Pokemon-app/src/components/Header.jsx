@@ -2,8 +2,17 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 function Header() {
+  const navigate = useNavigate();
+  
+  const [temaEscuro, setTemaEscuro] = useState(false);
 
-  const navigate = useNavigate()
+  useEffect(() => {
+    if (temaEscuro) {
+      document.body.classList.add("tema-escuro");
+    } else {
+      document.body.classList.remove("tema-escuro");
+    }
+  }, [temaEscuro]);
 
   return (
     <header className="app-header">
@@ -16,16 +25,66 @@ function Header() {
         />
         <span className="header-titulo">Pokédex G2L</span>
       </div>
-      <button className="header-dashboard" onClick={() => {navigate("/dashboard")}}>DashBoard</button>
+      
+     <button 
+          onClick={() => {navigate("/dashboard")}}
+          style={{ 
+            background: "transparent", 
+            border: "none", 
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            padding: 0
+          }}
+          title="Ir para o Dashboard"
+        >
+          <img 
+            src="/icones/EstrelaPreenchida.svg" 
+            alt="Dashboard" 
+            style={{ 
+              width: "25px", 
+              height: "25px",
+              filter: "brightness(0) invert(1)" 
+            }} 
+          />
+        </button>
+      
       <button
         className="btn-meus-times-mobile"
         onClick={() => document.querySelector(".meus-times").classList.toggle("aberto")}
       >
         Meus Times
       </button>
-      <div className="header-login">
-        <img src="/icones/mingcute--user-4-fill.svg" alt="" 
-        onClick={() => {navigate("/cadastro")}}
+      
+      <div className="header-login" style={{ display: "flex", alignItems: "center", gap: "15px", width: "auto" }}>
+        
+        <button 
+          onClick={() => setTemaEscuro(!temaEscuro)}
+          style={{ 
+            background: "transparent", 
+            border: "none", 
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            padding: 0
+          }}
+        >
+          <img 
+            src={temaEscuro ? "/icones/Solcheio.svg" : "/icones/Sol.svg"} 
+            alt="Tema" 
+            style={{ 
+                width: "30px", 
+                height: "30px",
+                filter: "brightness(0) invert(1)" 
+            }} 
+          />
+        </button>
+
+        <img 
+          src="/icones/Boneco.svg" 
+          alt="Login" 
+          onClick={() => {navigate("/cadastro")}}
+          style={{ cursor: "pointer", width: "25px", height: "25px" }}
         />
       </div>
     </header>
