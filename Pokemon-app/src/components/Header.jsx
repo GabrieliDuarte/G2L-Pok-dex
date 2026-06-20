@@ -23,12 +23,13 @@ function Header() {
           className="header-pokeball"
           onClick={() => {navigate("/")}}
         />
-        <span className="header-titulo"
-          onClick={() => {navigate("/")}}
-          >Pokédex G2L</span>
-      </div>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+        <span className="header-titulo" onClick={() => {navigate("/")}}>
+          Pokédex G2L
+        </span>
+      </div>
       
-     <button 
+      <div className="header-icones">
+        <button 
           onClick={() => {navigate("/dashboard")}}
           style={{ 
             background: "transparent", 
@@ -43,23 +44,10 @@ function Header() {
           <img 
             src="/icones/EstrelaPreenchida.svg" 
             alt="Dashboard" 
-            style={{ 
-              width: "25px", 
-              height: "25px",
-              filter: "brightness(0) invert(1)" 
-            }} 
+            style={{ width: "25px", height: "25px", filter: "brightness(0) invert(1)" }} 
           />
         </button>
-      
-      <button
-        className="btn-meus-times-mobile"
-        onClick={() => document.querySelector(".meus-times").classList.toggle("aberto")}
-      >
-        Meus Times
-      </button>
-      
-      <div className="header-login" style={{ display: "flex", alignItems: "center", gap: "15px", width: "auto" }}>
-        
+
         <button 
           onClick={() => setTemaEscuro(!temaEscuro)}
           style={{ 
@@ -70,15 +58,12 @@ function Header() {
             alignItems: "center",
             padding: 0
           }}
+          title={temaEscuro ? "Mudar para Modo Claro" : "Mudar para Modo Escuro"}
         >
           <img 
             src={temaEscuro ? "/icones/Solcheio.svg" : "/icones/Sol.svg"} 
             alt="Tema" 
-            style={{ 
-                width: "30px", 
-                height: "30px",
-                filter: "brightness(0) invert(1)" 
-            }} 
+            style={{ width: "30px", height: "30px", filter: "brightness(0) invert(1)" }} 
           />
         </button>
 
@@ -86,8 +71,17 @@ function Header() {
           src="/icones/Boneco.svg" 
           alt="Login" 
           onClick={() => {navigate("/cadastro")}}
-          style={{ cursor: "pointer", width: "25px", height: "25px" }}
+          style={{ cursor: "pointer", width: "25px", height: "25px", filter: "brightness(0) invert(1)" }}
+          title="Meu Perfil"
         />
+
+        <button
+          className="btn-meus-times-mobile"
+          onClick={() => document.querySelector(".meus-times").classList.toggle("aberto")}
+        >
+          Meus Times
+        </button>
+
       </div>
     </header>
   );

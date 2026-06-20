@@ -92,6 +92,12 @@ body {
     letter-spacing: -0.5px;
     cursor: pointer;
 }
+.header-icones {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-left: auto; 
+}
 
 .btn-favorito {
     transition: transform 0.2s ease;
@@ -702,6 +708,7 @@ body.tema-escuro .btn-favorito img {
 
     .btn-meus-times-mobile {
         display: block;
+        margin-left: 0;                                                                                                                                 
     }
 
     .meus-times {
