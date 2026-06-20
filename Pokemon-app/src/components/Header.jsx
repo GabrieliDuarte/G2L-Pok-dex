@@ -23,8 +23,10 @@ function Header() {
           className="header-pokeball"
           onClick={() => {navigate("/")}}
         />
-        <span className="header-titulo">Pokédex G2L</span>
-      </div>
+        <span className="header-titulo"
+          onClick={() => {navigate("/")}}
+          >Pokédex G2L</span>
+      </div>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
       
      <button 
           onClick={() => {navigate("/dashboard")}}
