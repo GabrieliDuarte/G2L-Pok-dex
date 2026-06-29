@@ -99,6 +99,16 @@ body {
     margin-left: auto; 
 }
 
+.header-usuario {
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 700;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .btn-favorito {
     transition: transform 0.2s ease;
 }

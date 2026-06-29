@@ -1,4 +1,5 @@
 import { useState } from "react";
+import api from "../services/api"
 
 const fraquezasPorTipo = {
   fire:     ["water", "rock", "ground"],
@@ -36,11 +37,11 @@ function calcularFraquezas(pokemons) {
     .map(([tipo]) => tipo);
 }
 
-function SlotPokemon({ pokemon, onRemover }) {
+function SlotPokemon({ pokemon, onRemover, carregando }) {
   return (
     <div
-      className={`slot-pokemon ${pokemon ? "preenchido" : "vazio"}`}
-      onClick={() => pokemon && onRemover(pokemon)}
+      className={`slot-pokemon ${pokemon ? "preenchido" : "vazio"} ${carregando ? "carregando" : ""}`}
+      onClick={() => pokemon && !carregando && onRemover(pokemon)}
       title={pokemon ? `Remover ${pokemon.name}` : ""}
     >
       {pokemon ? (
@@ -61,50 +62,105 @@ function SlotPokemon({ pokemon, onRemover }) {
 }
 
 export default function MeusTime({ times, setTimes, timeAtualId, setTimeAtualId }) {
-  const [editandoNome, setEditandoNome] = useState(false);
-  const [novoNome, setNovoNome] = useState("");
+  const [editandoNome, setEditandoNome]   = useState(false);
+  const [novoNome,     setNovoNome]       = useState("");
+  const [carregando,   setCarregando]     = useState(false);
+  const [erroLocal,    setErroLocal]      = useState("");
 
   const timeAtual = times.find((t) => t.id === timeAtualId);
 
-  function criarNovoTime() {
+  if (!timeAtual) {
+    return (
+      <aside className="meus-times">
+        <p className="time-atual-label">Nenhum time disponível.</p>
+      </aside>
+    );
+  }
+
+  // ── Criar novo time ──────────────────────────────────────────
+  async function criarNovoTime() {
     if (times.length >= 10) { alert("Você já tem 10 times!"); return; }
-    const novoId = Date.now();
-    const novoTime = { id: novoId, nome: `Time ${times.length + 1}`, pokemons: [] };
-    setTimes([...times, novoTime]);
-    setTimeAtualId(novoId);
+    setCarregando(true);
+    setErroLocal("");
+    try {
+      const { data } = await api.post("/times", {
+        nome: `Time ${times.length + 1}`,
+      });
+      // data já vem no formato { id (UUID), nome, pokemons: [] }
+      setTimes((prev) => [...prev, data]);
+      setTimeAtualId(data.id);
+    } catch (err) {
+      setErroLocal(err.response?.data?.erro || "Erro ao criar time.");
+    } finally {
+      setCarregando(false);
+    }
   }
 
-  function excluirTime() {
+  // ── Excluir time ─────────────────────────────────────────────
+  async function excluirTime() {
     if (times.length === 1) { alert("Você precisa ter pelo menos 1 time."); return; }
-    const novos = times.filter((t) => t.id !== timeAtualId);
-    setTimes(novos);
-    setTimeAtualId(novos[0].id);
+    if (!window.confirm(`Excluir "${timeAtual.nome}"?`)) return;
+    setCarregando(true);
+    setErroLocal("");
+    try {
+      await api.delete(`/times/${timeAtualId}`);
+      const novos = times.filter((t) => t.id !== timeAtualId);
+      setTimes(novos);
+      setTimeAtualId(novos[0].id);
+    } catch (err) {
+      setErroLocal(err.response?.data?.erro || "Erro ao excluir time.");
+    } finally {
+      setCarregando(false);
+    }
   }
 
+  // ── Editar nome ───────────────────────────────────────────────
   function iniciarEdicao() {
     setNovoNome(timeAtual.nome);
     setEditandoNome(true);
   }
 
-  function salvarNome() {
+  async function salvarNome() {
     if (!novoNome.trim()) return;
-    setTimes(times.map((t) => t.id === timeAtualId ? { ...t, nome: novoNome.trim() } : t));
-    setEditandoNome(false);
+    setCarregando(true);
+    setErroLocal("");
+    try {
+      await api.patch(`/times/${timeAtualId}`, { nome: novoNome.trim() });
+      setTimes(times.map((t) =>
+        t.id === timeAtualId ? { ...t, nome: novoNome.trim() } : t
+      ));
+      setEditandoNome(false);
+    } catch (err) {
+      setErroLocal(err.response?.data?.erro || "Erro ao renomear time.");
+    } finally {
+      setCarregando(false);
+    }
   }
 
-  function removerPokemon(pokemon) {
-    setTimes(times.map((t) =>
-      t.id === timeAtualId
-        ? { ...t, pokemons: t.pokemons.filter((p) => p.id !== pokemon.id) }
-        : t
-    ));
+  // ── Remover pokémon ───────────────────────────────────────────
+  // O "pokemon" aqui é o objeto que vem do backend (tem campo "id" UUID)
+  async function removerPokemon(pokemon) {
+    setCarregando(true);
+    setErroLocal("");
+    try {
+      await api.delete(`/times/${timeAtualId}/pokemons/${pokemon.id}`);
+      setTimes(times.map((t) =>
+        t.id === timeAtualId
+          ? { ...t, pokemons: t.pokemons.filter((p) => p.id !== pokemon.id) }
+          : t
+      ));
+    } catch (err) {
+      setErroLocal(err.response?.data?.erro || "Erro ao remover pokémon.");
+    } finally {
+      setCarregando(false);
+    }
   }
 
-  const fraquezas = timeAtual?.pokemons.length > 0
+  const fraquezas = timeAtual.pokemons.length > 0
     ? calcularFraquezas(timeAtual.pokemons)
     : [];
 
-  const slots = Array(6).fill(null).map((_, i) => timeAtual?.pokemons[i] || null);
+  const slots = Array(6).fill(null).map((_, i) => timeAtual.pokemons[i] || null);
 
   return (
     <aside className="meus-times">
@@ -122,12 +178,15 @@ export default function MeusTime({ times, setTimes, timeAtualId, setTimeAtualId 
               onKeyDown={(e) => e.key === "Enter" && salvarNome()}
               autoFocus
             />
-            <button className="btn-salvar-nome" onClick={salvarNome}>✓</button>
+            <button className="btn-salvar-nome" onClick={salvarNome} disabled={carregando}>
+              ✓
+            </button>
           </div>
         ) : (
+          // ⚠️  UUID é string — removido o Number() que estava aqui antes
           <select
             value={timeAtualId}
-            onChange={(e) => setTimeAtualId(Number(e.target.value))}
+            onChange={(e) => setTimeAtualId(e.target.value)}
             className="select-time"
           >
             {times.map((t) => (
@@ -137,13 +196,20 @@ export default function MeusTime({ times, setTimes, timeAtualId, setTimeAtualId 
         )}
       </div>
 
-      <p className="time-atual-label">Time Atual ({timeAtual?.nome})</p>
+      <p className="time-atual-label">Time Atual ({timeAtual.nome})</p>
 
       <div className="slots-grid">
         {slots.map((pokemon, i) => (
-          <SlotPokemon key={i} pokemon={pokemon} onRemover={removerPokemon} />
+          <SlotPokemon
+            key={i}
+            pokemon={pokemon}
+            onRemover={removerPokemon}
+            carregando={carregando}
+          />
         ))}
       </div>
+
+      {erroLocal && <p className="erro-times">{erroLocal}</p>}
 
       {fraquezas.length > 0 ? (
         <div className="fraquezas-section">
@@ -171,10 +237,12 @@ export default function MeusTime({ times, setTimes, timeAtualId, setTimeAtualId 
       )}
 
       <div className="times-botoes">
-        <button className="btn-criar" onClick={criarNovoTime}>Criar Novo Time</button>
+        <button className="btn-criar" onClick={criarNovoTime} disabled={carregando}>
+          Criar Novo Time
+        </button>
         <div className="botoes-secundarios">
-          <button className="btn-editar" onClick={iniciarEdicao}>Editar</button>
-          <button className="btn-excluir" onClick={excluirTime}>Excluir</button>
+          <button className="btn-editar" onClick={iniciarEdicao} disabled={carregando}>Editar</button>
+          <button className="btn-excluir" onClick={excluirTime} disabled={carregando}>Excluir</button>
         </div>
       </div>
     </aside>

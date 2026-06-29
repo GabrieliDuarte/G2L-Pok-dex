@@ -1,20 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import Header from '../components/Header';
-import { useNavigate } from 'react-router-dom';
-import { estaLogado, useAuth } from '../hooks/useAuth';
+import { useEffect, useState } from "react";
+import Header from "../components/Header";
+import { useNavigate } from "react-router-dom";
+import { estaLogado, useAuth } from "../hooks/useAuth";
 
-function Cadastro() {
+function Login() {
   const navigate = useNavigate();
-  const { cadastrar, loading, erro } = useAuth();
+  const { logar, loading, erro } = useAuth();
 
   const [form, setForm] = useState({
-    nome_treinador: '',
-    email: '',
-    senha: '',
+    email: "",
+    senha: "",
   });
 
   useEffect(() => {
-    if (estaLogado()) navigate('/', { replace: true });
+    if (estaLogado()) navigate("/", { replace: true });
   }, [navigate]);
 
   function handleChange(e) {
@@ -23,7 +22,7 @@ function Cadastro() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    await cadastrar(form);
+    await logar(form);
   }
 
   return (
@@ -33,23 +32,11 @@ function Cadastro() {
       <main className="cadastro-container">
         <div className="cadastro-card">
           <div className="cadastro-header">
-            <h1>Criar Conta</h1>
-            <p>Junte-se à Pokédex G2L e salve seus times!</p>
+            <h1>Entrar</h1>
+            <p>Acesse sua conta e continue montando seus times!</p>
           </div>
 
           <form className="cadastro-form" onSubmit={handleSubmit}>
-            <div className="input-group">
-              <label>Nome de Treinador</label>
-              <input
-                type="text"
-                name="nome_treinador"
-                placeholder="Ex: Ash Ketchum"
-                value={form.nome_treinador}
-                onChange={handleChange}
-                required
-              />
-            </div>
-
             <div className="input-group">
               <label>E-mail</label>
               <input
@@ -75,7 +62,6 @@ function Cadastro() {
               />
             </div>
 
-            {/* Exibe erro retornado pelo backend (e-mail duplicado, etc.) */}
             {erro && <p className="erro-form">{erro}</p>}
 
             <button
@@ -83,13 +69,13 @@ function Cadastro() {
               type="submit"
               disabled={loading}
             >
-              {loading ? 'Criando conta...' : 'Começar Jornada'}
+              {loading ? "Entrando..." : "Entrar"}
             </button>
           </form>
 
           <p className="link-login">
-            Já tem uma conta?{' '}
-            <span onClick={() => navigate('/login')}>Fazer Login</span>
+            Ainda não tem conta?{" "}
+            <span onClick={() => navigate("/cadastro")}>Criar conta</span>
           </p>
         </div>
       </main>
@@ -97,4 +83,4 @@ function Cadastro() {
   );
 }
 
-export default Cadastro;
+export default Login;

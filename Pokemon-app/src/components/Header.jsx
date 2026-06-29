@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { estaLogado, getUsuarioLogado, useAuth } from "../hooks/useAuth";
 
 function Header() {
   const navigate = useNavigate();
-  
+  const { deslogar } = useAuth();
   const [temaEscuro, setTemaEscuro] = useState(false);
+  const [usuario] = useState(() => getUsuarioLogado());
 
   useEffect(() => {
     if (temaEscuro) {
@@ -14,6 +16,16 @@ function Header() {
     }
   }, [temaEscuro]);
 
+  function irParaHome() {
+    if (estaLogado()) navigate("/");
+    else navigate("/login");
+  }
+
+  function handlePerfil() {
+    if (estaLogado()) deslogar();
+    else navigate("/login");
+  }
+
   return (
     <header className="app-header">
       <div className="header-logo">
@@ -21,67 +33,91 @@ function Header() {
           src="/icones/Poké_Ball_icon.svg"
           alt="Pokédex"
           className="header-pokeball"
-          onClick={() => {navigate("/")}}
+          onClick={irParaHome}
         />
-        <span className="header-titulo" onClick={() => {navigate("/")}}>
+        <span className="header-titulo" onClick={irParaHome}>
           Pokédex G2L
         </span>
       </div>
-      
-      <div className="header-icones">
-        <button 
-          onClick={() => {navigate("/dashboard")}}
-          style={{ 
-            background: "transparent", 
-            border: "none", 
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            padding: 0
-          }}
-          title="Ir para o Dashboard"
-        >
-          <img 
-            src="/icones/EstrelaPreenchida.svg" 
-            alt="Dashboard" 
-            style={{ width: "25px", height: "25px", filter: "brightness(0) invert(1)" }} 
-          />
-        </button>
 
-        <button 
+      <div className="header-icones">
+        {usuario && (
+          <span className="header-usuario" title={usuario.email}>
+            {usuario.nome_treinador}
+          </span>
+        )}
+
+        {estaLogado() && (
+          <button
+            onClick={() => navigate("/dashboard")}
+            style={{
+              background: "transparent",
+              border: "none",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              padding: 0,
+            }}
+            title="Ir para o Dashboard"
+          >
+            <img
+              src="/icones/EstrelaPreenchida.svg"
+              alt="Dashboard"
+              style={{
+                width: "25px",
+                height: "25px",
+                filter: "brightness(0) invert(1)",
+              }}
+            />
+          </button>
+        )}
+
+        <button
           onClick={() => setTemaEscuro(!temaEscuro)}
-          style={{ 
-            background: "transparent", 
-            border: "none", 
+          style={{
+            background: "transparent",
+            border: "none",
             cursor: "pointer",
             display: "flex",
             alignItems: "center",
-            padding: 0
+            padding: 0,
           }}
           title={temaEscuro ? "Mudar para Modo Claro" : "Mudar para Modo Escuro"}
         >
-          <img 
-            src={temaEscuro ? "/icones/Solcheio.svg" : "/icones/Sol.svg"} 
-            alt="Tema" 
-            style={{ width: "30px", height: "30px", filter: "brightness(0) invert(1)" }} 
+          <img
+            src={temaEscuro ? "/icones/Solcheio.svg" : "/icones/Sol.svg"}
+            alt="Tema"
+            style={{
+              width: "30px",
+              height: "30px",
+              filter: "brightness(0) invert(1)",
+            }}
           />
         </button>
 
-        <img 
-          src="/icones/Boneco.svg" 
-          alt="Login" 
-          onClick={() => {navigate("/cadastro")}}
-          style={{ cursor: "pointer", width: "25px", height: "25px", filter: "brightness(0) invert(1)" }}
-          title="Meu Perfil"
+        <img
+          src="/icones/Boneco.svg"
+          alt={estaLogado() ? "Sair" : "Entrar"}
+          onClick={handlePerfil}
+          style={{
+            cursor: "pointer",
+            width: "25px",
+            height: "25px",
+            filter: "brightness(0) invert(1)",
+          }}
+          title={estaLogado() ? "Sair da conta" : "Entrar"}
         />
 
-        <button
-          className="btn-meus-times-mobile"
-          onClick={() => document.querySelector(".meus-times").classList.toggle("aberto")}
-        >
-          Meus Times
-        </button>
-
+        {estaLogado() && (
+          <button
+            className="btn-meus-times-mobile"
+            onClick={() =>
+              document.querySelector(".meus-times")?.classList.toggle("aberto")
+            }
+          >
+            Meus Times
+          </button>
+        )}
       </div>
     </header>
   );
