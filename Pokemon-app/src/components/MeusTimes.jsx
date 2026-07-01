@@ -1,5 +1,14 @@
 import { useState } from "react";
-import api from "../services/api"
+import {
+  Legend,
+  PolarAngleAxis,
+  PolarGrid,
+  Radar,
+  RadarChart,
+  ResponsiveContainer,
+  Tooltip,
+} from "recharts";
+import api from "../services/api";
 
 const fraquezasPorTipo = {
   fire:     ["water", "rock", "ground"],
@@ -22,19 +31,74 @@ const fraquezasPorTipo = {
   normal:   ["fighting"],
 };
 
-function calcularFraquezas(pokemons) {
+const fortalezasPorTipo = {
+  fire:     ["grass", "ice", "bug", "steel"],
+  water:    ["fire", "ground", "rock"],
+  grass:    ["water", "ground", "rock"],
+  electric: ["water", "flying"],
+  ice:      ["grass", "ground", "flying", "dragon"],
+  fighting: ["normal", "ice", "rock", "dark", "steel"],
+  poison:   ["grass", "fairy"],
+  ground:   ["fire", "electric", "poison", "rock", "steel"],
+  flying:   ["grass", "fighting", "bug"],
+  psychic:  ["fighting", "poison"],
+  bug:      ["grass", "psychic", "dark"],
+  rock:     ["fire", "ice", "flying", "bug"],
+  ghost:    ["psychic", "ghost"],
+  dragon:   ["dragon"],
+  dark:     ["psychic", "ghost"],
+  steel:    ["ice", "rock", "fairy"],
+  fairy:    ["fighting", "dragon", "dark"],
+  normal:   [],
+};
+
+function contarTipos(pokemons, mapaPorTipo) {
   const contagem = {};
   pokemons.forEach((pokemon) => {
     pokemon.types.map((t) => t.type.name).forEach((tipo) => {
-      (fraquezasPorTipo[tipo] || []).forEach((f) => {
-        contagem[f] = (contagem[f] || 0) + 1;
+      (mapaPorTipo[tipo] || []).forEach((alvo) => {
+        contagem[alvo] = (contagem[alvo] || 0) + 1;
       });
     });
   });
-  return Object.entries(contagem)
+  return contagem;
+}
+
+function formatarTipo(tipo) {
+  return tipo.charAt(0).toUpperCase() + tipo.slice(1);
+}
+
+function calcularAnaliseTipos(pokemons) {
+  const fraquezas = contarTipos(pokemons, fraquezasPorTipo);
+  const fortalezas = contarTipos(pokemons, fortalezasPorTipo);
+
+  const tiposRelevantes = [
+    ...new Set([...Object.keys(fraquezas), ...Object.keys(fortalezas)]),
+  ]
+    .sort((a, b) => {
+      const totalA = (fraquezas[a] || 0) + (fortalezas[a] || 0);
+      const totalB = (fraquezas[b] || 0) + (fortalezas[b] || 0);
+      return totalB - totalA;
+    })
+    .slice(0, 8);
+
+  const chartData = tiposRelevantes.map((tipo) => ({
+    tipo: formatarTipo(tipo),
+    fraqueza: fraquezas[tipo] || 0,
+    forte: fortalezas[tipo] || 0,
+  }));
+
+  const topFraquezas = Object.entries(fraquezas)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 6)
     .map(([tipo]) => tipo);
+
+  const topFortalezas = Object.entries(fortalezas)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 6)
+    .map(([tipo]) => tipo);
+
+  return { chartData, topFraquezas, topFortalezas };
 }
 
 function SlotPokemon({ pokemon, onRemover, carregando }) {
@@ -156,9 +220,9 @@ export default function MeusTime({ times, setTimes, timeAtualId, setTimeAtualId 
     }
   }
 
-  const fraquezas = timeAtual.pokemons.length > 0
-    ? calcularFraquezas(timeAtual.pokemons)
-    : [];
+  const analiseTipos = timeAtual.pokemons.length > 0
+    ? calcularAnaliseTipos(timeAtual.pokemons)
+    : null;
 
   const slots = Array(6).fill(null).map((_, i) => timeAtual.pokemons[i] || null);
 
@@ -211,28 +275,57 @@ export default function MeusTime({ times, setTimes, timeAtualId, setTimeAtualId 
 
       {erroLocal && <p className="erro-times">{erroLocal}</p>}
 
-      {fraquezas.length > 0 ? (
+      {analiseTipos ? (
         <div className="fraquezas-section">
-          <p className="fraquezas-titulo">Análise de Fraquezas</p>
-          <div className="fraquezas-icones">
-            {fraquezas.map((tipo) => (
-              <img
-                key={tipo}
-                src={`https://raw.githubusercontent.com/partywhale/pokemon-type-icons/master/icons/${tipo}.svg`}
-                alt={tipo}
-                title={tipo}
-                className="fraqueza-icon"
-              />
-            ))}
+          <p className="fraquezas-titulo">Análise de Tipos</p>
+
+          <div className="tipo-radar-chart">
+            <ResponsiveContainer width="100%" height="100%">
+              <RadarChart data={analiseTipos.chartData} cx="50%" cy="50%" outerRadius="70%">
+                <PolarGrid stroke="var(--borda)" />
+                <PolarAngleAxis
+                  dataKey="tipo"
+                  tick={{ fill: "var(--texto-suave)", fontSize: 10 }}
+                />
+                <Tooltip
+                  contentStyle={{
+                    background: "var(--card-bg)",
+                    border: "1px solid var(--borda)",
+                    borderRadius: "8px",
+                    fontSize: "0.75rem",
+                  }}
+                />
+                <Radar
+                  name="Fraco contra"
+                  dataKey="fraqueza"
+                  stroke="#e74c3c"
+                  fill="#e74c3c"
+                  fillOpacity={0.35}
+                />
+                <Radar
+                  name="Forte contra"
+                  dataKey="forte"
+                  stroke="#27ae60"
+                  fill="#27ae60"
+                  fillOpacity={0.35}
+                />
+                <Legend wrapperStyle={{ fontSize: "0.72rem" }} />
+              </RadarChart>
+            </ResponsiveContainer>
           </div>
+
           <p className="fraco-contra">
             <strong>Fraco contra: </strong>
-            {fraquezas.map((f) => f.charAt(0).toUpperCase() + f.slice(1)).join(", ")}
+            {analiseTipos.topFraquezas.map(formatarTipo).join(", ")}
+          </p>
+          <p className="forte-contra">
+            <strong>Forte contra: </strong>
+            {analiseTipos.topFortalezas.map(formatarTipo).join(", ")}
           </p>
         </div>
       ) : (
         <div className="fraquezas-vazio">
-          <p>Adicione Pokémon ao time para ver as fraquezas</p>
+          <p>Adicione Pokémon ao time para ver a análise de tipos</p>
         </div>
       )}
 
