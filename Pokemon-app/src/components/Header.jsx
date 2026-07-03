@@ -61,7 +61,7 @@ function Header() {
             title="Ir para o Dashboard"
           >
             <img
-              src="/icones/EstrelaPreenchida.svg"
+              src="/icones/mage--chart-fill.svg"
               alt="Dashboard"
               style={{
                 width: "25px",
