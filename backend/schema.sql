@@ -1,7 +1,7 @@
 -- Schema da Pokédex G2L
 -- Execute este script no PostgreSQL antes de rodar o backend.
 
-CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+CREATE EXTENSION IF NOT EXISTS "pgcrypto"; --permite que o banco de dados gere UUIDs
 
 CREATE TABLE IF NOT EXISTS usuarios (
   id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
