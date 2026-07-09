@@ -140,8 +140,6 @@ export default function MeusTime({ times, setTimes, timeAtualId, setTimeAtualId 
       </aside>
     );
   }
-
-  // ── Criar novo time ──────────────────────────────────────────
   async function criarNovoTime() {
     if (times.length >= 10) { alert("Você já tem 10 times!"); return; }
     setCarregando(true);
@@ -160,7 +158,6 @@ export default function MeusTime({ times, setTimes, timeAtualId, setTimeAtualId 
     }
   }
 
-  // ── Excluir time ─────────────────────────────────────────────
   async function excluirTime() {
     if (times.length === 1) { alert("Você precisa ter pelo menos 1 time."); return; }
     if (!window.confirm(`Excluir "${timeAtual.nome}"?`)) return;
@@ -178,7 +175,6 @@ export default function MeusTime({ times, setTimes, timeAtualId, setTimeAtualId 
     }
   }
 
-  // ── Editar nome ───────────────────────────────────────────────
   function iniciarEdicao() {
     setNovoNome(timeAtual.nome);
     setEditandoNome(true);
@@ -201,7 +197,6 @@ export default function MeusTime({ times, setTimes, timeAtualId, setTimeAtualId 
     }
   }
 
-  // ── Remover pokémon ───────────────────────────────────────────
   // O "pokemon" aqui é o objeto que vem do backend (tem campo "id" UUID)
   async function removerPokemon(pokemon) {
     setCarregando(true);
@@ -247,7 +242,6 @@ export default function MeusTime({ times, setTimes, timeAtualId, setTimeAtualId 
             </button>
           </div>
         ) : (
-          // ⚠️  UUID é string — removido o Number() que estava aqui antes
           <select
             value={timeAtualId}
             onChange={(e) => setTimeAtualId(e.target.value)}
@@ -279,7 +273,8 @@ export default function MeusTime({ times, setTimes, timeAtualId, setTimeAtualId 
         <div className="fraquezas-section">
           <p className="fraquezas-titulo">Análise de Tipos</p>
 
-          <div className="tipo-radar-chart">
+         
+          <div className="tipo-radar-chart">     
             <ResponsiveContainer width="100%" height="100%">
               <RadarChart data={analiseTipos.chartData} cx="50%" cy="50%" outerRadius="70%">
                 <PolarGrid stroke="var(--borda)" />

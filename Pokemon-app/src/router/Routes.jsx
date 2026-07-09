@@ -1,3 +1,5 @@
+// arquivo de rotas,qual tela desenhar dependendo da URL que o usuário digitar.
+
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import Home from "../pages/Home";
 import Cadastro from "../pages/Cadastro";

@@ -24,8 +24,17 @@ export default function Pokedex({
   const [sugestoes, setSugestoes] = useState([]);
   const totalPaginas = Math.ceil(TOTAL_POKEMONS / LIMITE);
   const isMounted = useRef(true);
-  const [favoritos, setFavoritos] = useState([]);
+  const [favoritos, setFavoritos] = useState(() => {
+    const favoritosSalvos = localStorage.getItem("meusFavoritosG2L");
+    if (favoritosSalvos) {
+      return JSON.parse(favoritosSalvos);
+    }
+    return [];
+  });
 
+  useEffect(() => {
+    localStorage.setItem("meusFavoritosG2L", JSON.stringify(favoritos));
+  }, [favoritos]);
   useEffect(() => {
     async function carregarListaPokemon() {
       try {

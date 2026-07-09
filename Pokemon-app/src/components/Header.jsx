@@ -1,3 +1,4 @@
+//As importações
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { estaLogado, getUsuarioLogado, useAuth } from "../hooks/useAuth";
@@ -10,7 +11,7 @@ function Header() {
 
   useEffect(() => {
     if (temaEscuro) {
-      document.body.classList.add("tema-escuro");
+      document.body.classList.add("tema-escuro"); 
     } else {
       document.body.classList.remove("tema-escuro");
     }
